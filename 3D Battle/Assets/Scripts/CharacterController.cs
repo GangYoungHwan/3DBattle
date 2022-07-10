@@ -12,25 +12,50 @@ public class CharacterController : MonoBehaviour
     private float cameraSpeed;
     [SerializeField]
     private float moveSpeed;
-    Animator animator;
+    [SerializeField]
+    private float jumpPower;
+    private Animator animator;
+    private Rigidbody rigid;
+
+    private bool isJumping;
+    private bool isGrounded;
+    private bool isMove;
     void Start()
     {
         animator = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButton(0))
+        CheckGround();
+        if (Input.GetMouseButton(0))
         {
             LookAround();
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isJumping = true;
+        }
+    }
+    private void FixedUpdate()
+    {
         move();
+        if (isJumping&& isGrounded)
+        {
+            Jump();
+        }
+        animator.SetBool("isGrounded", isGrounded);
+        if (rigid.velocity.y < 0&&!isGrounded) animator.SetBool("isFalling", true);
+        
+
     }
     private void move()
     {
         Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        bool isMove = moveInput.magnitude != 0;
+        isMove = moveInput.magnitude != 0;
         animator.SetBool("iswalk", isMove);
         if (isMove)
         {
@@ -57,4 +82,30 @@ public class CharacterController : MonoBehaviour
         }
         cameraArm.rotation = Quaternion.Euler(dx, camAngle.y + mouseDelta.x* cameraSpeed, camAngle.z);
     }
+
+    private void Jump()
+    {
+        animator.SetBool("isJumping", true);
+        rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+        isJumping = false;
+    }
+
+    private void CheckGround()
+    {
+        Debug.Log(rigid.velocity.y);
+        RaycastHit Hit;
+        Debug.DrawRay(transform.position, Vector3.down * 0.1f, Color.red);
+        if (Physics.Raycast(transform.position, Vector3.down, out Hit, 0.1f))
+        {
+            if (Hit.transform.tag =="Ground")
+            {
+                isGrounded = true;
+                animator.SetBool("isFalling", false);
+                animator.SetBool("isJumping", false);
+                return;
+            }
+        }
+        isGrounded = false;
+    }
+
 }

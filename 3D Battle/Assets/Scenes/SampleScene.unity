@@ -233,6 +233,7 @@ MonoBehaviour:
   cameraArm: {fileID: 903924540}
   cameraSpeed: 8
   moveSpeed: 5
+  jumpPower: 6
 --- !u!1001 &232945485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -595,7 +596,7 @@ GameObject:
   - component: {fileID: 1186855114}
   m_Layer: 0
   m_Name: Map01
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
